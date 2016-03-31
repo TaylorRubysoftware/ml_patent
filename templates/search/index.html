@@ -1,0 +1,86 @@
+{% extends 'search/base.html' %}
+
+{% load bootstrap3 %}
+
+{% block title %}Search for patents{% endblock %}
+
+{% block content %} 
+    
+    This is <em>patent search</em>. It uses <strong>deep learning</strong> techniques. Provide text or load text file.
+    <br/><br/>
+    <input type=file id=files /><a id='loadfile'>Load file</a>
+    <br/><br/>
+    <textarea id="input-text" class='form-control' placeholder="lorem impsum"></textarea>
+    <br/>
+    <button id="search-btn" class="btn btn-primary">
+        {% bootstrap_icon "search" %}
+        Search
+    </button>
+
+    <br/>
+    <br/>
+
+    <p id="results_status" />
+
+    <div id="results" class="container">
+        <ul class="list-group">
+        </ul>
+    </div>
+
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+
+    <script>
+        function presentResults(data) {
+            $("#results_status").text(data.results.length + " patents returned.");
+            $("#results .list-group").empty();
+            for(var i = 0; i < data.results.length; ++i) {
+                var result = data.results[i];
+                console.log("got " + result)
+                $("#results .list-group").append( $(
+                                "<li class='list-group-item'>Title: " + result.name +
+                                 "<br/>Id: " + result.id +
+                                 "<br/><a href='" + result.url +
+                                 "'>View PDF document</a></li>") );
+            }
+        }
+
+        $(document).ready(function() {
+            $("#search-btn").click(function() {
+                $.ajax({
+                    url: '/search/query',
+                    data: $("#input-text").val(),
+                    success: function (data) {
+                        presentResults(data);
+                    }
+                });
+            });
+
+            function processFile(e) {
+                var file = e.target.result;
+                $('#input-text').text(file);
+            };
+
+            $('#loadfile').click(function() {
+                if (!window.FileReader) {
+                    alert('Your browser is not supported');
+                    return false;
+                }
+                var input = $('#files').get(0);
+                var reader = new FileReader();
+                if (input.files.length) {
+                    var textFile = input.files[0];
+                    reader.readAsText(textFile);
+                    $(reader).on('load', processFile);
+                } else {
+                    alert('Please upload a file before continuing')
+                } 
+            });
+        });
+
+    </script>
+    
+    <div class="footer">
+        <p>work in progres. &copy; 2014</p>
+    </div>
+
+{% endblock %}

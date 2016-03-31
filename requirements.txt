@@ -1,0 +1,8 @@
+Django==1.6.1
+django-bootstrap3==4.11.0
+django-filter==0.7
+djangorestframework==2.4.3
+django-toolbelt
+stemming
+git+ssh://git@bitbucket.org/ml-patents/patent-dbn.git#egg=patent-dbn
+
